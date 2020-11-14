@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+backend/expect_scp
+backend/mock.tar
+backend/.idea
+backend/Dockerfile
+backend/build.sh
