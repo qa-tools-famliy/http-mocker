@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-CopyRight Baidu, Inc
+MISSSHI
 """
 from bson import ObjectId
 import json

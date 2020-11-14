@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-# WANGZHE12
+# MISSSHI
 """
 
 # 端口信息
@@ -13,5 +13,9 @@ MONGODB_URL_LIST = [
 MONGODB_PORT = "27017"
 MONGODB_DBNAME = "mock_management"
 
+# ETCD地址
 ETCD_ADDRESS = "192.168.1.22"
 ETCD_PORT = "2379"
+
+# 请求记录保存时间
+EVENTS_RESERVED_HOURS = 6

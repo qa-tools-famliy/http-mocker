@@ -15,7 +15,8 @@ from flask import Flask
 from flask import jsonify
 from flask import make_response
 from flask import request
-from models.mock_records import query_mock_records_by_condition
+from controller.common import common_web_api
+from controller.records_api import records_api
 from crontabs.overdue_data_cleaning import mongodb_overdue_data_cleaning
 from utils.id_generator import generator_id
 from utils.generate_mock_data import get_mock_response
@@ -23,28 +24,14 @@ from utils.generate_mock_data import get_mock_rules
 from utils.generate_mock_data import generate_mock_response
 from utils.generate_mock_data import apply_mock_chaos
 from utils.save_record_to_mongo import send_mock_service_record_to_mongo
-from utils.etcd_utils import insert_etcd_data
-from utils.etcd_utils import delete_etcd_key
 from utils.etcd_utils import fetch_all_etcd_data_list
 from utils.etcd_utils import watch_etcd_data_change
 from config import HTTP_PORT
 
 
 app = Flask(__name__)
-
-
-@app.route('/health')
-def health():
-    """
-    # 健康检查脚本
-    :return:
-    """
-    result = {
-        "code": 200,
-        "message": "success",
-        "data": "READY"
-    }
-    return make_response(jsonify(result))
+app.register_blueprint(common_web_api)
+app.register_blueprint(records_api)
 
 
 @app.route('/keys')
@@ -58,87 +45,6 @@ def inner_keys():
         "code": 200,
         "message": "success",
         "data": global_url_config
-    }
-    return make_response(jsonify(result))
-
-
-@app.route('/mock_rules', methods=['POST', 'DELETE'])
-def mock_rules_manage():
-    """
-    # mock规则管理
-    # POST用于新增和覆盖
-    # DELETE用于删除
-    :return:
-    """
-    json_data = request.get_json()
-    if "url" not in json_data or not json_data["url"]:
-        result = {
-            "code": 400,
-            "message": "url is required",
-            "data": None
-        }
-        return make_response(jsonify(result))
-    key = "/mock_urls" + json_data["url"]
-    if "method" in json_data and json_data["method"] in ["GET", "POST", "PUT", "DELETE"]:
-        key = key + "|" + json_data["method"]
-    if "source_ip" in json_data and json_data["source_ip"]:
-        key = key + "|" + json_data["source_ip"]
-    request_method = request.method
-    if request_method == "DELETE":
-        delete_etcd_key(key)
-    else:
-        insert_data = {
-            "response_options": json_data["response_options"]
-        }
-        if "chaos_rules" in json_data and json_data["chaos_rules"]:
-            insert_data["chaos_rules"] = json_data["chaos_rules"]
-        insert_etcd_data(key, json.dumps(insert_data))
-    result = {
-        "code": 200,
-        "message": "success",
-        "data": None
-    }
-    return make_response(jsonify(result))
-
-
-@app.route('/query_mock_records', methods=['GET', 'POST'])
-def query_mock_records():
-    """
-    # 查询Mock服务请求记录
-    :return:
-    """
-    json_data = request.get_json()
-    query_condition = {}
-    if not json_data:
-        result = {
-            "code": 400,
-            "message": "fail: latest_time_range must be input",
-            "data": []
-        }
-        return make_response(jsonify(result), 400)
-    if "begin_time" in json_data and "end_time" in json_data:
-        pass
-    elif "latest_time_range" in json_data:
-        begin_time = int(time.time()) - int(json_data["latest_time_range"])
-        query_condition["timestamp"] = {
-            "$gt": begin_time
-        }
-    else:
-        result = {
-            "code": 400,
-            "message": "fail: latest_time_range must be input",
-            "data": []
-        }
-        return make_response(jsonify(result), 400)
-    if "url" in json_data:
-        query_condition["requests_path"] = json_data["url"]
-    if "device_ip" in json_data:
-        query_condition["source_ip"] = json_data["device_ip"]
-    records_items = query_mock_records_by_condition(query_condition)
-    result = {
-        "code": 200,
-        "message": "success",
-        "data": records_items
     }
     return make_response(jsonify(result))
 
