@@ -14,7 +14,7 @@
 对于http-mocker服务来言，存在两个依赖服务，分别是：
 
 1. ETCD：用于记录自定义的Mock规则，该依赖必备，否则无法启动。[ETCD安装](https://qa.missshi.com/databases/etcd/install.html)
-2. MongoDB：用于支持请求记录持久化与条件查询，如果没有请求记录查询诉求，可以禁用该功能，此时，MongoDB依赖可以忽略。如果需要请求记录持久化与条件查询，那么MongoDB依赖必备。[mongodb安装](https://qa.missshi.com/databases/mongo/install.html）
+2. MongoDB：用于支持请求记录持久化与条件查询，如果没有请求记录查询诉求，可以禁用该功能，此时，MongoDB依赖可以忽略。如果需要请求记录持久化与条件查询，那么MongoDB依赖必备。[mongodb安装](https://qa.missshi.com/databases/mongo/install.html)
 
 ## 服务部署
 
