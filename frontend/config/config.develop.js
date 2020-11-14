@@ -11,7 +11,7 @@ export default defineConfig({
     hmr: true,
   },
   history: {
-    type: 'browser',
+    type: 'hash',
   },
   locale: {
     // default zh-CN
@@ -39,7 +39,7 @@ export default defineConfig({
   // 关闭mock
   proxy: {
     '/api': {
-      'target': 'http://192.168.1.22:8080/',
+      'target': 'http://127.0.0.1:8080/',
       'changeOrigin': true,
     },
   },

@@ -28,19 +28,6 @@ export default [
             name: 'welcome',
             icon: 'smile',
             component: './Welcome',        // component对应的是组件的核心页面
-            routes: [
-              {
-                path: '/admin/sub-page',   // path指的是routes.js中的path信息
-                name: 'sub-page',          // name仅仅是名称，无实际影响
-                icon: 'smile',             // icon表示的是图标
-              },
-            ],
-          },
-          {
-            path: '/test',
-            name: 'Test',
-            icon: 'smile',
-            component: './NewPage',        // component对应的是组件的核心页面
           },
           {
             path: 'https://pro.ant.design/docs/getting-started-cn',
@@ -49,26 +36,16 @@ export default [
             target: '_blank'
           },
           {
-            path: '/admin',
-            name: 'admin',
-            icon: 'crown',
-            component: './Admin',
-            authority: ['admin'],
-            routes: [
-              {
-                path: '/admin/sub-page',
-                name: 'sub-page',
-                icon: 'smile',
-                component: './Welcome',
-                authority: ['admin'],
-              },
-            ],
-          },
-          {
             name: 'list.table-list',
             icon: 'table',
             path: '/list',
             component: './ListTableList',
+          },
+          {
+            name: '规则管理',
+            icon: 'table',
+            path: '/rules',
+            component: './Rules',
           },
           {
             component: './404',
