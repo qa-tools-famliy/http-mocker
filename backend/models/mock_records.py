@@ -3,6 +3,7 @@
 # www.missshi.cn
 """
 import json
+import pymongo
 from utils.mongoize import JSONEncoder
 from models.connection import mongodb_instance
 
@@ -28,6 +29,20 @@ def query_mock_records_by_condition(conditions):
     result = list(mongodb_instance[collection_name].find(conditions))
     result = json.loads(JSONEncoder().encode(result))
     return result
+
+
+def query_mock_records_by_condition_and_page(conditions, page_number, page_size):
+    """
+    # 根据指定查询条件进行记录查询
+    :param conditions:
+    :return:
+    """
+    total = mongodb_instance[collection_name].find(conditions).count()
+    result_list = list(mongodb_instance[collection_name].find(conditions).sort(
+            "datetime", pymongo.DESCENDING
+        ).skip((page_number - 1) * page_size).limit(page_size))
+    result = json.loads(JSONEncoder().encode(result_list))
+    return result, total
 
 
 def remove_mock_records(conditions):

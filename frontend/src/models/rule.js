@@ -17,12 +17,12 @@ const RuleModel = {
                 "latest_time_range": 600,
                 "host_ip": body.host_ip
             });
-            if (response.code === 200) {
-                message.success(response.message);
-            }
-            else {
-                message.error(response.message);
-            }
+            // if (response.code === 200) {
+            //     message.success(response.message);
+            // }
+            // else {
+            //     message.error(response.message);
+            // }
             yield put({
                 type: 'saveRules',
                 ruleList: response.data,

@@ -21,31 +21,19 @@ export default [
         routes: [
           {
             path: '/',
-            redirect: '/welcome',
-          },
-          {
-            path: '/welcome',
-            name: 'welcome',
-            icon: 'smile',
-            component: './Welcome',        // component对应的是组件的核心页面
-          },
-          {
-            path: 'https://pro.ant.design/docs/getting-started-cn',
-            name: '文档',
-            icon: 'smile',
-            target: '_blank'
-          },
-          {
-            name: 'list.table-list',
-            icon: 'table',
-            path: '/list',
-            component: './ListTableList',
+            redirect: '/rules',
           },
           {
             name: '规则管理',
             icon: 'table',
             path: '/rules',
             component: './Rules',
+          },
+          {
+            name: '请求记录查询',
+            icon: 'table',
+            path: '/records',
+            component: './Records',
           },
           {
             component: './404',

@@ -17,6 +17,7 @@ from flask import make_response
 from flask import request
 from flask import render_template
 from controller.common import common_web_api
+from controller.rules_api import rules_api
 from controller.records_api import records_api
 from crontabs.overdue_data_cleaning import mongodb_overdue_data_cleaning
 from utils.id_generator import generator_id
@@ -32,6 +33,7 @@ from config import HTTP_PORT
 
 app = Flask(__name__)
 app.register_blueprint(common_web_api)
+app.register_blueprint(rules_api)
 app.register_blueprint(records_api)
 
 
