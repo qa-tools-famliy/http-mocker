@@ -10,12 +10,13 @@ from flask import jsonify
 from flask import request
 from utils.etcd_utils import insert_etcd_data
 from utils.etcd_utils import delete_etcd_key
+from utils.etcd_utils import fetch_all_etcd_data_list
 
 
 rules_api = Blueprint("rules_api", __name__)
 
 
-@rules_api.route('/mock_rules', methods=['POST', 'DELETE'])
+@rules_api.route('/api/mock_rules', methods=['GET', 'POST', 'DELETE'])
 def mock_rules_manage():
     """
     # mock规则管理
@@ -23,24 +24,58 @@ def mock_rules_manage():
     # DELETE用于删除
     :return:
     """
-    json_data = request.get_json()
-    if "url" not in json_data or not json_data["url"]:
+    if request.method == 'GET':
+        page_number = int(request.args.get('page_num', 1))
+        page_size = int(request.args.get("page_size", 10))
+        result_list = []
+        result_count = 0
+        rule_list = fetch_all_etcd_data_list()
+        for item in rule_list:
+            key = item.key.replace("/mock_urls", "")
+            key_info = key.split("|")
+            item_info = {}
+            if len(key_info) == 3:
+                item_info["url"] = key_info[0]
+                item_info["method"] = key_info[1]
+                item_info["source_ip"] = key_info[2]
+                item_info["config"] = item.value
+            elif len(key_info) == 2:
+                item_info["url"] = key_info[0]
+                item_info["method"] = key_info[1]
+                item_info["source_ip"] = "*"
+            elif len(key_info) == 1:
+                item_info["url"] = key_info[0]
+                item_info["method"] = "*"
+                item_info["source_ip"] = "*"
+            if item.value:
+                item_info["config"] = json.loads(item.value)
+                result_list.append(item_info)
+                result_count += 1
+
+        result_list = result_list[(page_number - 1) * page_size: page_number * page_size]
         result = {
-            "code": 400,
-            "message": "url is required",
-            "data": None
+            "code": 200,
+            "message": "success",
+            "data": {
+                "rule_list": result_list,
+                "total": result_count
+            }
         }
         return make_response(jsonify(result))
-    key = "/mock_urls" + json_data["url"]
-    if "method" in json_data and json_data["method"] in ["GET", "POST", "PUT", "DELETE"]:
-        key = key + "|" + json_data["method"]
-    if "source_ip" in json_data and json_data["source_ip"]:
-        key = key + "|" + json_data["source_ip"]
-    request_method = request.method
-    if request_method == "DELETE":
-        logger.info("delete rule key: %s" % key)
-        delete_etcd_key(key)
-    else:
+    elif request.method == 'POST':
+        json_data = request.get_json()
+        if "url" not in json_data or not json_data["url"]:
+            result = {
+                "code": 400,
+                "message": "url is required",
+                "data": None
+            }
+            return make_response(jsonify(result))
+        key = "/mock_urls" + json_data["url"]
+        if "method" in json_data and json_data["method"] in ["GET", "POST", "PUT", "DELETE"]:
+            key = key + "|" + json_data["method"]
+        if "source_ip" in json_data and json_data["source_ip"]:
+            key = key + "|" + json_data["source_ip"]
         insert_data = {
             "response_options": json_data["response_options"]
         }
@@ -48,9 +83,31 @@ def mock_rules_manage():
             insert_data["chaos_rules"] = json_data["chaos_rules"]
         logger.info("update rule key: %s" % key)
         insert_etcd_data(key, json.dumps(insert_data))
-    result = {
-        "code": 200,
-        "message": "success",
-        "data": None
-    }
-    return make_response(jsonify(result))
+        result = {
+            "code": 200,
+            "message": "success",
+            "data": None
+        }
+        return make_response(jsonify(result))
+    elif request.method == 'DELETE':
+        json_data = request.get_json()
+        if "url" not in json_data or not json_data["url"]:
+            result = {
+                "code": 400,
+                "message": "url is required",
+                "data": None
+            }
+            return make_response(jsonify(result))
+        key = "/mock_urls" + json_data["url"]
+        if "method" in json_data and json_data["method"] in ["GET", "POST", "PUT", "DELETE"]:
+            key = key + "|" + json_data["method"]
+        if "source_ip" in json_data and json_data["source_ip"]:
+            key = key + "|" + json_data["source_ip"]
+        logger.info("delete rule key: %s" % key)
+        delete_etcd_key(key)
+        result = {
+            "code": 200,
+            "message": "success",
+            "data": None
+        }
+        return make_response(jsonify(result))

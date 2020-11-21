@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'dva';
-import { Table } from 'antd';
+import SearchForm from './SearchForm';
+import ListTable from './listTable';
 
 
 @connect(({rule}) => ({
@@ -9,45 +10,48 @@ import { Table } from 'antd';
 
 export default class Rules extends Component {
 
-    componentDidMount() {
-        console.log("123")
-        this.props.dispatch({
-            type: 'rule/fetchRules',
-            body: {
-                "host_ip": "192.168.1.1"
-            }
-        });
+    constructor(props) {
+        super(props);
+        // 设置state
+        this.state ={
+            page_num: 1,
+            page_size: 10
+        }
+    }
+
+    changeTableState(page_num, page_size){
+        this.setState({
+            page_num: page_num,
+            page_size: page_size
+        })
     }
 
     render() {
         console.log("this.props: ", this.props);
-        const dataSource = this.props.rule.ruleList;
-          
-          const columns = [
-            {
-                title: '请求URL',
-                dataIndex: 'requests_path',
-                key: 'requests_path',
-            },
-            {
-              title: '请求方式',
-              dataIndex: 'method',
-              key: 'method',
-            },
-            {
-              title: '来源IP',
-              dataIndex: 'source_ip',
-              key: 'source_ip',
-            },
-            {
-              title: '时间',
-              dataIndex: 'datetime',
-              key: 'datetime',
-            },
-          ];
 
         return (
-            <Table dataSource={dataSource} columns={columns} />
+            <div>
+                <SearchForm
+                    searchInfo={{
+                        "pageNum": this.state.page_num,
+                        "pageSize": this.state.page_size
+                    }}
+                    changeTableState={this.changeTableState.bind(this)}
+                    dispatch={this.props.dispatch}
+                    rule={this.props.rule}
+                    dataset={this.props.dataset}
+                />
+                <br />
+                <ListTable 
+                    searchInfo={{
+                        "pageNum": this.state.page_num,
+                        "pageSize": this.state.page_size
+                    }}
+                    changeTableState={this.changeTableState.bind(this)}
+                    dispatch={this.props.dispatch}
+                    rule={this.props.rule}
+                />
+            </div>
         );
     }
 };

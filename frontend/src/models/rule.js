@@ -1,4 +1,7 @@
-import { queryRule } from '@/services/rule';
+import {
+    queryRule,
+    addRule,
+} from '@/services/rule';
 import {
     message
 } from 'antd';
@@ -13,19 +16,26 @@ const RuleModel = {
 
     effects: {
         *fetchRules({body}, { call, put }) {
-            const response = yield call(queryRule, {
-                "latest_time_range": 600,
-                "host_ip": body.host_ip
-            });
-            // if (response.code === 200) {
-            //     message.success(response.message);
-            // }
-            // else {
-            //     message.error(response.message);
-            // }
+            const response = yield call(queryRule, body);
             yield put({
                 type: 'saveRules',
-                ruleList: response.data,
+                ruleList: response.data.rule_list,
+                ruleTotal: response.data.total,
+            });
+        },
+        *newRule({body}, { call, put }) {
+            const response1 = yield call(addRule, body.inputData);
+            if (response1.code === 200) {
+                message.success(response1.message);
+            }
+            else {
+                message.error(response1.message);
+            }
+            const response = yield call(queryRule, body.searchInfo);
+            yield put({
+                type: 'saveRules',
+                ruleList: response.data.rule_list,
+                ruleTotal: response.data.total,
             });
         },
     },
@@ -34,7 +44,8 @@ const RuleModel = {
         saveRules(state, action) {
             return {
                 ...state,
-                ruleList: action.ruleList
+                ruleList: action.ruleList,
+                ruleTotal: action.ruleTotal,
             };
         },
     },
