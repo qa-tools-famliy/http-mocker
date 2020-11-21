@@ -71,6 +71,13 @@ def mock_rules_manage():
                 "data": None
             }
             return make_response(jsonify(result))
+        if not json_data["url"].startswith("/"):
+            result = {
+                "code": 400,
+                "message": "url must startwith /",
+                "data": None
+            }
+            return make_response(jsonify(result))
         key = "/mock_urls" + json_data["url"]
         if "method" in json_data and json_data["method"] in ["GET", "POST", "PUT", "DELETE"]:
             key = key + "|" + json_data["method"]

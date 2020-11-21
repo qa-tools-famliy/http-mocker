@@ -1,6 +1,41 @@
 import React from 'react';
-import {Table} from 'antd';
+import {Table, Modal} from 'antd';
 import ReactJson from 'react-json-view'
+const confirm = Modal.confirm;
+
+
+function showDeleteConfirm(dispatch, dataItem, searchInfo) {
+    confirm({
+        title: '确认删除该MOCK规则吗？',
+        okText: 'Yes',
+        okType: 'danger',
+        cancelText: 'No',
+        onOk() {
+            let data = {
+                url: dataItem.url,
+            };
+
+            if (dataItem.method !== "*") {
+                data["method"] = dataItem.method
+            }
+
+            if (dataItem.source_ip !== "*") {
+                data["source_ip"] = dataItem.source_ip
+            }
+
+            dispatch({
+                type: 'rule/removeRule',
+                body: {
+                    inputData: data,
+                    searchInfo: searchInfo,
+                }
+            });
+        },
+        onCancel() {
+            console.log('Cancel');
+        }
+    });
+}
 
 
 function isEquivalent(a, b) {
@@ -73,7 +108,12 @@ class ListTable extends React.Component {
             {
                 title: '配置',
                 dataIndex: 'config',
-                key: 'configconfig',
+                key: 'config',
+            },
+            {
+                title: '操作',
+                dataIndex: 'operation',
+                key: 'operation',
             },
         ];
         console.log("ruleList: ", this.props.rule.ruleList)
@@ -83,6 +123,9 @@ class ListTable extends React.Component {
             let dataItem = ruleList[i];
             dataItem.key = ruleList[i]._id;
             dataItem.config = <ReactJson src={ruleList[i].config} />
+            dataItem.operation = <span>
+                <a style={{margin: 8}} onClick={showDeleteConfirm.bind(this, this.props.dispatch, ruleList[i], this.props.searchInfo)}>删除</a>
+            </span>
             dataSource.push(dataItem);
         }
 

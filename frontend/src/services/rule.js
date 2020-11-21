@@ -13,3 +13,10 @@ export async function addRule(params) {
         data: { ...params },
     });
 }
+
+export async function deleteRule(params) {
+    return request('/api/mock_rules', {
+        method: 'DELETE',
+        data: { ...params },
+    });
+}

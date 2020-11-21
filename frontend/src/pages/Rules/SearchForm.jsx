@@ -1,135 +1,136 @@
-import React from 'react';
-import {Button, Form, Modal, Input, Select} from 'antd';
-const FormItem = Form.Item;
+import React, { useState } from 'react';
+import { Button, Modal, Form, Input, Select } from 'antd';
 const Option = Select.Option;
 const TextArea = Input.TextArea;
 
 
-class NewRuleForm extends React.Component {
-    formRef = React.createRef();
+const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
+    const [form] = Form.useForm();
 
-    onFinish = () => {
-        let searchInfo = this.props.searchInfo;
-        this.props.dispatch({
-            type: 'rule/newRule',
-            body: {
-                inputData: this.formRef.current.getFieldValue(),
-                searchInfo: searchInfo
+    const checkJson = (rule, value, callback) => {
+        try {
+            if (value === "") {
+                callback();
             }
-        });
-        this.formRef.current.resetFields();
-        this.props.updateVisible(false);
-    }
+            else if (value === undefined) {
+                callback();
+            }
+            else {
+                JSON.parse(value);
+                callback();
+            }
+        } catch (e) {
+            callback('输入需要满足JSON格式');
+        }
+    };
 
-    onCancel = () => {
-        this.props.updateVisible(false);
-    }
-
-    render() {
-        const {visible} = this.props;
-
-        const formItemLayout = {
-            labelCol: {span: 5},
-            wrapperCol: {span: 19}
-        };
-
-        return (
-            <Modal
-                visible={visible}
-                title="创建Mock规则"
-                okText="创建"
-                onCancel={this.onCancel}
-                onOk={this.onFinish}
+    return (
+        <Modal
+        visible={visible}
+        title="创建Mock规则"
+        okText="创建"
+        cancelText="取消"
+        onCancel={onCancel}
+        onOk={() => {
+            form
+            .validateFields()
+            .then((values) => {
+                form.resetFields();
+                onCreate(values);
+            })
+            // .catch((info) => {
+            //     console.log('Validate Failed:', info);
+            // });
+        }}
+        >
+        <Form
+            form={form}
+            layout="vertical"
+            name="创建Mock规则"
+            initialValues={{}}
+        >
+            <Form.Item
+                label="请求URL"
+                name="url"
+                rules={[{required: true}]}
             >
-                <Form ref={this.formRef}>
-                    <FormItem
-                        {...formItemLayout}
-                        label="请求URL"
-                        name="url"
-                        rules={[{required: true}]}
-                    >
-                        <Input />
-                    </FormItem>
-                    <FormItem
-                        {...formItemLayout}
-                        label="请求方式"
-                        name="method"
-                        rules={[{required: true}]}
-                    >
-                        <Select>
-                            <Option value="GET">GET</Option>
-                            <Option value="POST">POST</Option>
-                            <Option value="PUT">PUT</Option>
-                            <Option value="DELETE">DELETE</Option>
-                        </Select>
-                    </FormItem>
-                    <FormItem
-                        {...formItemLayout}
-                        label="来源IP"
-                        name="source_ip"
-                        rules={[{required: true}]}
-                    >
-                        <Input />
-                    </FormItem>
-                    <FormItem
-                        {...formItemLayout}
-                        label="响应配置"
-                        name="response_options"
-                        rules={[{required: true}]}
-                    >
-                        <TextArea />
-                    </FormItem>
-                    <FormItem
-                        {...formItemLayout}
-                        label="异常注入"
-                        name="chaos_rules"
-                        rules={[{required: true}]}
-                    >
-                        <TextArea />
-                    </FormItem>
-                </Form>
-            </Modal>
-        );
-    }
+                <Input />
+            </Form.Item>
+            <Form.Item
+                label="请求方式"
+                name="method"
+            >
+                <Select>
+                    <Option value="GET">GET</Option>
+                    <Option value="POST">POST</Option>
+                    <Option value="PUT">PUT</Option>
+                    <Option value="DELETE">DELETE</Option>
+                </Select>
+            </Form.Item>
+            <Form.Item
+                label="来源IP"
+                name="source_ip"
+            >
+                <Input />
+            </Form.Item>
+            <Form.Item
+                label="响应配置"
+                name="response_options"
+                rules={[{
+                    validator: checkJson,
+                },{required: true}]}
+            >
+                <TextArea />
+            </Form.Item>
+            <Form.Item
+                label="异常注入"
+                name="chaos_rules"
+                rules={[{
+                    validator: checkJson,
+                }]}
+            >
+                <TextArea />
+            </Form.Item>
+        </Form>
+        </Modal>
+    );
 };
 
+const AddRuleButton = (props) => {
+    const [visible, setVisible] = useState(false);
 
-class AddRuleButton extends React.Component {
+    const onCreate = (values) => {
+        console.log('Received values of form: ', values);
+        props.dispatch({
+            type: 'rule/newRule',
+            body: {
+                inputData: values,
+                searchInfo: props.searchInfo
+            }
+        });
+        console.log("dispatch")
+        setVisible(false);
+    };
 
-    state = {
-        visible: false
-    };
-    showModal = () => {
-        this.setState({visible: true});
-    };
-    updateVisible = (visible) => {
-        this.setState({
-            visible: visible
-        })
-    };
- 
-    render() {
-
-        return (
-            <div>
-                <Button
-                    type="primary"
-                    style={{marginBottom: 15}}
-                    onClick={this.showModal}
-                >
-                    创建Mock规则
-                </Button>
-                <NewRuleForm
-                    wrappedComponentRef={this.saveFormRef}
-                    visible={this.state.visible}
-                    rule={this.props.rule}
-                    dispatch={this.props.dispatch}
-                    updateVisible={this.updateVisible}
-                    searchInfo={this.props.searchInfo}
-                />
-            </div>
-        );
-    }
-}
+    return (
+        <div>
+        <Button
+            type="primary"
+            onClick={() => {
+                setVisible(true);
+            }}
+        >
+            创建Mock规则
+        </Button>
+        <CollectionCreateForm
+            visible={visible}
+            onCreate={onCreate}
+            onCancel={() => {
+                setVisible(false);
+            }}
+        />
+        </div>
+    );
+};
 
 export default AddRuleButton;

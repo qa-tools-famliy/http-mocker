@@ -1,6 +1,7 @@
 import {
     queryRule,
     addRule,
+    deleteRule,
 } from '@/services/rule';
 import {
     message
@@ -25,6 +26,21 @@ const RuleModel = {
         },
         *newRule({body}, { call, put }) {
             const response1 = yield call(addRule, body.inputData);
+            if (response1.code === 200) {
+                message.success(response1.message);
+            }
+            else {
+                message.error(response1.message);
+            }
+            const response = yield call(queryRule, body.searchInfo);
+            yield put({
+                type: 'saveRules',
+                ruleList: response.data.rule_list,
+                ruleTotal: response.data.total,
+            });
+        },
+        *removeRule({body}, { call, put }) {
+            const response1 = yield call(deleteRule, body.inputData);
             if (response1.code === 200) {
                 message.success(response1.message);
             }
