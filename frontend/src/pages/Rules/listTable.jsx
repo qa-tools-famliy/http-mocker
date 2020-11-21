@@ -122,7 +122,8 @@ class ListTable extends React.Component {
         for (let i = 0; i < ruleList.length; i++) {
             let dataItem = ruleList[i];
             dataItem.key = ruleList[i]._id;
-            dataItem.config = <ReactJson src={ruleList[i].config} />
+            // dataItem.config = <ReactJson src={ruleList[i].config} />
+            dataItem.config = JSON.stringify(ruleList[i].config);
             dataItem.operation = <span>
                 <a style={{margin: 8}} onClick={showDeleteConfirm.bind(this, this.props.dispatch, ruleList[i], this.props.searchInfo)}>删除</a>
             </span>
