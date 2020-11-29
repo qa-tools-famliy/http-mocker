@@ -9,6 +9,15 @@ from config import ETCD_ADDRESS, ETCD_PORT
 etcd_client = etcd.Client(host=ETCD_ADDRESS, port=int(ETCD_PORT))
 
 
+def create_etcd_dir():
+    """
+    # 创建对应的ETCD目录
+    :return:
+    """
+    pass
+    # etcd_client.write("/mock_urls", "", dir=True)
+
+
 def delete_etcd_key(key):
     """
     # 从ETCD中删除指定key
@@ -33,7 +42,10 @@ def fetch_all_etcd_data_list():
     # 获取etcd中的全部数据
     :return:
     """
-    data_list = etcd_client.read("/mock_urls", recursive=True).children
+    try:
+        data_list = etcd_client.read("/mock_urls", recursive=True).children
+    except Exception as e:
+        data_list = []
     return data_list
 
 

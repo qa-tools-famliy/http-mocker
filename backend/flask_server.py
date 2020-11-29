@@ -28,6 +28,7 @@ from utils.generate_mock_data import apply_mock_chaos
 from utils.save_record_to_mongo import send_mock_service_record_to_mongo
 from utils.etcd_utils import fetch_all_etcd_data_list
 from utils.etcd_utils import watch_etcd_data_change
+from utils.etcd_utils import create_etcd_dir
 from config import HTTP_PORT
 
 
@@ -281,6 +282,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGINT, sig_handler)
 
+    create_etcd_dir()
     # 实例级别Monitor（实时状态同步）
     history_cleaner = HistoryCleaner()
     history_cleaner_thread = Thread(
