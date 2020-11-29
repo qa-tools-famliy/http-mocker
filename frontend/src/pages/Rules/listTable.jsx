@@ -1,6 +1,7 @@
 import React from 'react';
-import {Table, Modal} from 'antd';
-import ReactJson from 'react-json-view'
+import {Table, Modal, Button} from 'antd';
+import UpdateButton from './UpdateButton';
+import CopyButton from './CopyButton';
 const confirm = Modal.confirm;
 
 
@@ -106,9 +107,14 @@ class ListTable extends React.Component {
                 key: 'source_ip',
             },
             {
-                title: '配置',
-                dataIndex: 'config',
-                key: 'config',
+                title: '响应配置',
+                dataIndex: 'response_options',
+                key: 'response_options',
+            },
+            {
+                title: '异常注入',
+                dataIndex: 'chaos_rules',
+                key: 'chaos_rules',
             },
             {
                 title: '操作',
@@ -122,10 +128,24 @@ class ListTable extends React.Component {
         for (let i = 0; i < ruleList.length; i++) {
             let dataItem = ruleList[i];
             dataItem.key = ruleList[i]._id;
-            // dataItem.config = <ReactJson src={ruleList[i].config} />
-            dataItem.config = JSON.stringify(ruleList[i].config);
+            dataItem.response_options = JSON.stringify(ruleList[i].response_options);
+            dataItem.chaos_rules = JSON.stringify(ruleList[i].chaos_rules);
             dataItem.operation = <span>
-                <a style={{margin: 8}} onClick={showDeleteConfirm.bind(this, this.props.dispatch, ruleList[i], this.props.searchInfo)}>删除</a>
+                <UpdateButton 
+                    searchInfo={this.props.searchInfo}
+                    changeTableState={this.props.changeTableState}
+                    dispatch={this.props.dispatch}
+                    rule={this.props.rule}
+                    defaultValue={dataItem}
+                />
+                <CopyButton
+                    searchInfo={this.props.searchInfo}
+                    changeTableState={this.props.changeTableState}
+                    dispatch={this.props.dispatch}
+                    rule={this.props.rule}
+                    defaultValue={dataItem}
+                />
+                <Button type="link" onClick={showDeleteConfirm.bind(this, this.props.dispatch, ruleList[i], this.props.searchInfo)}>删除</Button>
             </span>
             dataSource.push(dataItem);
         }

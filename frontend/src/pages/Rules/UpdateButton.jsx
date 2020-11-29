@@ -4,7 +4,7 @@ const Option = Select.Option;
 const TextArea = Input.TextArea;
 
 
-const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
+const CollectionCreateForm = ({ visible, defaultValue, onCreate, onCancel }) => {
     const [form] = Form.useForm();
 
     const checkJson = (rule, value, callback) => {
@@ -27,8 +27,8 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
     return (
         <Modal
         visible={visible}
-        title="创建Mock规则"
-        okText="创建"
+        title="修改Mock规则"
+        okText="修改"
         cancelText="取消"
         onCancel={onCancel}
         onOk={() => {
@@ -43,24 +43,21 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
         <Form
             form={form}
             layout="vertical"
-            name="创建Mock规则"
-            initialValues={{
-                response_options: "[]",
-                chaos_rules: "[]"
-            }}
+            name="修改Mock规则"
+            initialValues={defaultValue}
         >
             <Form.Item
                 label="请求URL"
                 name="url"
                 rules={[{required: true}]}
             >
-                <Input />
+                <Input disabled/>
             </Form.Item>
             <Form.Item
                 label="请求方式"
                 name="method"
             >
-                <Select>
+                <Select disabled>
                     <Option value="GET">GET</Option>
                     <Option value="POST">POST</Option>
                     <Option value="PUT">PUT</Option>
@@ -71,7 +68,7 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
                 label="来源IP"
                 name="source_ip"
             >
-                <Input />
+                <Input disabled/>
             </Form.Item>
             <Form.Item
                 label="响应配置"
@@ -96,7 +93,7 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
     );
 };
 
-const AddRuleButton = (props) => {
+const UpdateRuleButton = (props) => {
     const [visible, setVisible] = useState(false);
 
     const onCreate = (values) => {
@@ -115,15 +112,16 @@ const AddRuleButton = (props) => {
     return (
         <div>
         <Button
-            type="primary"
+            type="link"
             onClick={() => {
                 setVisible(true);
             }}
         >
-            创建Mock规则
+            修改
         </Button>
         <CollectionCreateForm
             visible={visible}
+            defaultValue={props.defaultValue}
             onCreate={onCreate}
             onCancel={() => {
                 setVisible(false);
@@ -133,4 +131,4 @@ const AddRuleButton = (props) => {
     );
 };
 
-export default AddRuleButton;
+export default UpdateRuleButton;
