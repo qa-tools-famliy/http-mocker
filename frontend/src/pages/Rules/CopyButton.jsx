@@ -28,7 +28,7 @@ const CollectionCreateForm = ({ visible, defaultValue, onCreate, onCancel }) => 
         <Modal
         visible={visible}
         title="新建Mock规则"
-        okText="修改"
+        okText="创建"
         cancelText="取消"
         onCancel={onCancel}
         onOk={() => {

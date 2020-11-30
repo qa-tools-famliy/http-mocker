@@ -91,6 +91,9 @@ def mock_rules_manage():
     if request.method == 'GET':
         page_number = int(request.args.get('page_num', 1))
         page_size = int(request.args.get("page_size", 10))
+        search_url = request.args.get("url", "")
+        search_method = request.args.get("method", "")
+        search_source_ip = request.args.get("source_ip", "")
         result_list = []
         result_count = 0
         rule_list = fetch_all_etcd_data_list()
@@ -111,6 +114,12 @@ def mock_rules_manage():
                 item_info["method"] = "*"
                 item_info["source_ip"] = "*"
             if item.value:
+                if search_url not in item_info["url"]:
+                    continue
+                if search_method not in item_info["method"]:
+                    continue
+                if search_source_ip not in item_info["source_ip"]:
+                    continue
                 config = json.loads(item.value)
                 item_info["response_options"] = json.loads(item.value)["response_options"]
                 if "chaos_rules" in config:
@@ -119,7 +128,8 @@ def mock_rules_manage():
                     item_info["chaos_rules"] = []
                 result_list.append(item_info)
                 result_count += 1
-
+        result_list = sorted(result_list, key=lambda rule_item: rule_item["url"] + rule_item["method"]
+                                                                + rule_item["source_ip"])
         result_list = result_list[(page_number - 1) * page_size: page_number * page_size]
         result = {
             "code": 200,

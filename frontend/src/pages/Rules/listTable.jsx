@@ -154,6 +154,7 @@ class ListTable extends React.Component {
             <Table
             	columns={columns}
                 dataSource={dataSource}
+                onChange={this.onChangeCondition}
                 pagination={
                     {
                         showSizeChanger: true,

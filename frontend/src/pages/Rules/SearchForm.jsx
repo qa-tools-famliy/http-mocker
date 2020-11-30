@@ -1,8 +1,71 @@
 import React, { useState } from 'react';
-import { Button, Modal, Form, Input, Select } from 'antd';
+import { Button, Modal, Form, Input, Select, Row, Col } from 'antd';
 const Option = Select.Option;
 const TextArea = Input.TextArea;
+const FormItem = Form.Item;
 
+
+const SearchForm = ({ changeSearchInfo }) => {
+    const [form] = Form.useForm();
+
+    const onFinish = (values) => {
+        console.log('debug: changeSearchState, ', values);
+        changeSearchInfo(values.url, values.method, values.source_ip);
+    };
+
+    const handleReset = () => {
+        form.resetFields();
+    };
+
+    const getFields = () => {
+        const children = [];
+        children.push(
+            <Col span={5} key={1} style={{display: 'block'}}>
+                <FormItem labelCol={{span: 5}} wrapperCol={{span: 19}} label="URL" name="url">
+                    <Input />
+                </FormItem>
+            </Col>
+        );
+        children.push(
+            <Col span={5} key={2} style={{display: 'block'}}>
+                <FormItem labelCol={{span: 5}} wrapperCol={{span: 19}} label="请求方式" name="method">
+                    <Select>
+                        <Option value="GET">GET</Option>
+                        <Option value="POST">POST</Option>
+                        <Option value="PUT">PUT</Option>
+                        <Option value="DELETE">DELETE</Option>
+                    </Select>
+                </FormItem>
+            </Col>
+        );
+        children.push(
+            <Col span={5} key={3} style={{display: 'block'}}>
+                <FormItem labelCol={{span: 5}} wrapperCol={{span: 19}} label="来源IP" name="source_ip">
+                    <Input />
+                </FormItem>
+            </Col>
+        );
+        children.push(
+            <Col span={8} key={4} style={{display: 'block'}}>
+                <Button type="primary" htmlType="submit">Search</Button>
+                <Button style={{margin: 8}} onClick={handleReset}>
+                    Clear
+                </Button>
+            </Col>
+        );
+        return children;
+    }
+
+    return (
+        <Form
+            className="ant-advanced-search-form"
+            form={form}
+            onFinish={onFinish}
+        >
+            <Row gutter={40}>{getFields()}</Row>
+        </Form>
+    );
+}
 
 const CollectionCreateForm = ({ visible, onCreate, onCancel }) => {
     const [form] = Form.useForm();
@@ -114,21 +177,24 @@ const AddRuleButton = (props) => {
 
     return (
         <div>
-        <Button
-            type="primary"
-            onClick={() => {
-                setVisible(true);
-            }}
-        >
-            创建Mock规则
-        </Button>
-        <CollectionCreateForm
-            visible={visible}
-            onCreate={onCreate}
-            onCancel={() => {
-                setVisible(false);
-            }}
-        />
+            <SearchForm 
+                changeSearchInfo={props.changeSearchInfo}
+            />
+            <Button
+                type="primary"
+                onClick={() => {
+                    setVisible(true);
+                }}
+            >
+                创建Mock规则
+            </Button>
+            <CollectionCreateForm
+                visible={visible}
+                onCreate={onCreate}
+                onCancel={() => {
+                    setVisible(false);
+                }}
+            />
         </div>
     );
 };

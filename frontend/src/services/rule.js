@@ -1,7 +1,24 @@
 import request from '@/utils/request';
 
 export async function queryRule(params) {
-    return request('/api/mock_rules?page_num=' + params.pageNum + "&page_size=" + params.pageSize, {
+    console.log('debug params: ', params);
+    let baseUrl = '/api/mock_rules?'
+    if (params.pageNum) {
+        baseUrl = baseUrl + 'page_num=' + params.pageNum + '&';
+    }
+    if (params.pageSize) {
+        baseUrl = baseUrl + 'page_num=' + params.pageSize + '&';
+    }
+    if (params.url) {
+        baseUrl = baseUrl + 'url=' + params.url + '&';
+    }
+    if (params.method) {
+        baseUrl = baseUrl + 'method=' + params.method + '&';
+    }
+    if (params.source_ip) {
+        baseUrl = baseUrl + 'source_ip=' + params.source_ip + '&';
+    }
+    return request(baseUrl, {
         method: 'GET',
         data: {},
     });
