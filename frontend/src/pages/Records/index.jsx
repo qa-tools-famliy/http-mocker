@@ -18,22 +18,25 @@ export default class records extends Component {
             page_size: 10,
             requests_path: '',
             method: '',
-            source_ip: ''
+            source_ip: '',
+            latest_time_range: 60 * 60 * 6
         }
     }
 
     componentDidMount() {
+        console.log('this.state: ', this.state);
         this.props.dispatch({
             type: 'record/fetchRecords',
             body: this.state
         });
     }
 
-    changeSearchState(requests_path, method, source_ip) {
+    changeSearchState(requests_path, method, source_ip, latest_time_range) {
         this.setState({
             requests_path: requests_path,
             method: method,
-            source_ip: source_ip
+            source_ip: source_ip,
+            latest_time_range: latest_time_range
         })
     }
 
@@ -49,24 +52,12 @@ export default class records extends Component {
             <div>
                 <SearchForm
                     changeSearchState={this.changeSearchState.bind(this)}
-                    searchInfo={{
-                        "requests_path": this.state.requests_path,
-                        "method": this.state.method,
-                        "source_ip": this.state.source_ip,
-                        "pageNum": this.state.page_num,
-                        "pageSize": this.state.page_size
-                    }}
+                    searchInfo={this.state}
                     dispatch={this.props.dispatch}
                     record={this.props.record}
                 />
                 <ListTable 
-                    searchInfo={{
-                        "requests_path": this.state.requests_path,
-                        "method": this.state.method,
-                        "source_ip": this.state.source_ip,
-                        "pageNum": this.state.page_num,
-                        "pageSize": this.state.page_size
-                    }}
+                    searchInfo={this.state}
                     changeTableState={this.changeTableState.bind(this)}
                     dispatch={this.props.dispatch}
                     record={this.props.record}

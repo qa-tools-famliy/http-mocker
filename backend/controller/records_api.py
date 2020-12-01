@@ -2,6 +2,7 @@
 """
 # www.missshi.cn
 """
+import re
 import time
 from logzero import logger
 from flask import Blueprint
@@ -37,13 +38,13 @@ def query_mock_records():
             "$gt": begin_time
         }
     if "requests_path" in json_data and json_data["requests_path"]:
-        query_condition["requests_path"] = json_data["requests_path"]
+        query_condition["requests_path"] = re.compile(json_data["requests_path"])
     if "source_ip" in json_data and json_data["source_ip"]:
-        query_condition["source_ip"] = json_data["source_ip"]
+        query_condition["source_ip"] = re.compile(json_data["source_ip"])
     if "method" in json_data and json_data["method"]:
         query_condition["method"] = json_data["method"]
     if "page_num" in json_data:
-        page_number = int(json_data["page_number"])
+        page_number = int(json_data["page_num"])
     else:
         page_number = 1
     if "page_size" in json_data:

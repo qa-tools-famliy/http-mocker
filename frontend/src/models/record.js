@@ -14,10 +14,7 @@ const RecordModel = {
 
     effects: {
         *fetchRecords({body}, { call, put }) {
-            const response = yield call(queryRecord, {
-                "latest_time_range": 600,
-                "host_ip": body.host_ip
-            });
+            const response = yield call(queryRecord, body);
             yield put({
                 type: 'saveRecords',
                 recordList: response.data.record_list,

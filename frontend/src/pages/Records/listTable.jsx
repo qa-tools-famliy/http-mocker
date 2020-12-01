@@ -1,5 +1,5 @@
 import React from 'react';
-import {Table} from 'antd';
+import {Table, Drawer, Button, Radio, Space} from 'antd';
 
 
 function isEquivalent(a, b) {
@@ -19,11 +19,15 @@ function isEquivalent(a, b) {
 
 
 class ListTable extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
             current: this.props.searchInfo.pageNum,
-            pageSize: this.props.searchInfo.pageSize
+            pageSize: this.props.searchInfo.pageSize,
+            visible: false,
+            placement: 'bottom',
+            placementInfo: {}
         };
     }
 
@@ -35,6 +39,7 @@ class ListTable extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log('debug next ReceiveProps: ', nextProps.searchInfo);
         if (!isEquivalent(nextProps.searchInfo, this.props.searchInfo)) {
             let searchInfo = nextProps.searchInfo;
             if (nextProps.searchInfo.requests_path !== this.props.searchInfo.requests_path) {
@@ -46,6 +51,7 @@ class ListTable extends React.Component {
                     pageSize: 10
                 });
             }
+            console.log('debug componentWillReceiveProps: ', searchInfo)
             this.props.dispatch({
                 type: 'record/fetchRecords',
                 body: searchInfo
@@ -58,6 +64,19 @@ class ListTable extends React.Component {
         this.setState({
             current: pagination.current,
             pageSize: pagination.pageSize
+        });
+    };
+
+    showDrawer = (info) => {
+        this.setState({
+            visible: true,
+            placementInfo: info
+        });
+    };
+
+    onClose = () => {
+        this.setState({
+            visible: false,
         });
     };
 
@@ -82,6 +101,11 @@ class ListTable extends React.Component {
                 title: '时间',
                 dataIndex: 'datetime',
                 key: 'datetime',
+            },
+            {
+                title: '操作',
+                dataIndex: 'operator',
+                key: 'operator',
             }
         ];
         let recordList = this.props.record.recordList;
@@ -89,25 +113,56 @@ class ListTable extends React.Component {
         for (let i = 0; i < recordList.length; i++) {
             let dataItem = recordList[i];
             dataItem.key = recordList[i]._id;
+            dataItem.operator = <a onClick={() => {this.showDrawer(recordList[i])}}>详情</a>;
             dataSource.push(dataItem);
         }
 
         return (
-            <Table
-            	columns={columns}
-                dataSource={dataSource}
-                onChange={this.onChangeCondition}
-                pagination={
-                    {
-                        showSizeChanger: true,
-                        pageSizeOptions: [10, 20, 40, 100],
-                        defaultCurrent: 1,
-                        total: this.props.record.recordListTotal,
-                        current: this.state.current,
-                        pageSize: this.state.pageSize
+            <div>
+                <Table
+                    columns={columns}
+                    dataSource={dataSource}
+                    onChange={this.onChangeCondition}
+                    pagination={
+                        {
+                            showSizeChanger: true,
+                            pageSizeOptions: [10, 20, 40, 100],
+                            defaultCurrent: 1,
+                            total: this.props.record.recordListTotal,
+                            current: this.state.current,
+                            pageSize: this.state.pageSize
+                        }
                     }
-                }
-            />
+                />
+                <Drawer
+                    title="请求详情"
+                    placement={this.state.placement}
+                    closable={false}
+                    height={512}
+                    onClose={this.onClose}
+                    visible={this.state.visible}
+                    key={this.state.placement}
+                >
+                    <p>请求ID: {this.state.placementInfo.request_id}</p>
+                    <br />
+                    <p>请求信息：</p>
+                    <p>请求时间：{this.state.placementInfo.datetime}</p>
+                    <p>请求URL：{this.state.placementInfo.requests_path}</p>
+                    <p>请求方式：{this.state.placementInfo.method}</p>
+                    <p>来源IP：{this.state.placementInfo.source_ip}</p>
+                    <p>请求头部：{this.state.placementInfo.headers}</p>
+                    <p>url参数：{this.state.placementInfo.param_data}</p>
+                    <p>form参数：{this.state.placementInfo.form_data}</p>
+                    <p>json参数：{this.state.placementInfo.json_data}</p>
+                    <p>来源IP：{this.state.placementInfo.source_ip}</p>
+                    <br />
+                    <p>响应信息：</p>
+                    <p>响应码：{this.state.placementInfo.response_code}</p>
+                    <p>响应格式：{this.state.placementInfo.response_format}</p>
+                    <p>响应数据：{JSON.stringify(this.state.placementInfo.response_data)}</p>
+                    <p>异常注入：{JSON.stringify(this.state.placementInfo.chaos_list)}</p>
+                </Drawer>
+            </div>
         );
     }
 }
