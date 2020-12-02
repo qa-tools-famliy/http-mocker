@@ -132,8 +132,5 @@ dmypy.json
 backend/expect_scp
 backend/mock.tar
 backend/.idea
-backend/Dockerfile
+backend/Dockerfile.baidu
 backend/build.sh
-
-
-
