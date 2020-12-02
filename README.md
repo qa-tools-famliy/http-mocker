@@ -20,9 +20,9 @@
 
 我们的服务支持如下几种部署方式：
 
-1. 本地部署。
-2. Docker部署。
-3. K8s部署。
+1. [本地部署](./docs/deploy_doc/local_deploy.md)
+2. [Docker部署](./docs/deploy_doc/docker_deploy.md)
+3. [K8s部署](./docs/deploy_doc/k8s_deploy.md)
 
 ## 使用指南
 
@@ -32,7 +32,7 @@
 
 ### HTTP REST接口介绍
 
+## 开发指南
+
 ## 常见问题
-
-
 
